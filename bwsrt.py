@@ -37,6 +37,7 @@ blacklist_regex = re.compile(blacklist)
 check_blacklist = config.getboolean("Configuration", "CheckBlackList")
 check_numbering = config.getboolean("Configuration", "CheckNumbering")
 check_overlapping = config.getboolean("Configuration", "CheckOverlapping")
+min_duration = str(config.get("Configuration", "MinimumDuration"))
 
 # Read command line arguments
 parser = argparse.ArgumentParser()
@@ -150,7 +151,8 @@ for filename in os.listdir(workingpath):
 
                 # Check if subtitle show/hide-timecodes are ok
                 if datetime1 >= datetime2:
-                    datetime5 = datetime1 + datetime.timedelta(milliseconds=300)
+                    datetime5 = datetime1 + datetime.timedelta(
+                        milliseconds=min_duration)
                     timestr5=datetime5.strftime(timeformat)[:-3]
                     print('Show/hide subtitle overlapping detected.')
                     print('Linenumber...........: {0}, line: {1}'.format(
