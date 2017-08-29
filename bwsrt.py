@@ -22,6 +22,7 @@ from class_subrip import SubRip
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 debug = False
+fix = False
 scriptspath = os.path.dirname(os.path.realpath(__file__)) # Scripts path
 configfile = os.path.join(scriptspath, "bwsrt.cfg") # Configuration file
 workingpath = os.getcwd() # Working path
@@ -31,16 +32,23 @@ config = configparser.RawConfigParser()
 config.read(configfile)
 blacklist = str(config.get("Configuration", "BlackList"))
 blacklist_regex = re.compile(blacklist)
-check_blacklist = bool(config.get("Configuration", "CheckBlackList"))
-check_numbering = bool(config.get("Configuration", "CheckNumbering"))
-fix_numbering = bool(config.get("Configuration", "FixNumbering"))
-check_overlapping = bool(config.get("Configuration", "CheckOverlapping"))
+check_blacklist = config.getboolean("Configuration", "CheckBlackList")
+check_numbering = config.getboolean("Configuration", "CheckNumbering")
+check_overlapping = config.getboolean("Configuration", "CheckOverlapping")
 
 # Read command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", action="store_true", dest="debug",
     required=False, help="Print debugging information.")
+parser.add_argument("-f", action="store_true", dest="fix",
+    required=False, help="Fix file.")
 args = parser.parse_args() # Returns data from the options specified
+
+# Command line arguments override default and config settings
+if args.debug:
+    debug = True
+if args.fix:
+    fix = True
 
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -87,6 +95,7 @@ for filename in os.listdir(workingpath):
                 print('Word.................: {0}'.format(result.group(0)))
                 print('Subtitles............: {0}.'.format(subtitle[2]))
                 print()
+                srt.delete(key)
 
 
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -102,7 +111,7 @@ for filename in os.listdir(workingpath):
                     .format(filename))
                 print('Expected number {0}, got {1}.'
                     .format(counter, subtitle_number))
-                if fix_numbering:
+                if fix:
                     srt.subtitles[key][0] = str(counter)
                     print('Fixed numbering. Line="{0}".'
                         .format(srt.subtitles[key]))
@@ -178,8 +187,12 @@ for filename in os.listdir(workingpath):
 
 
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    # File processing complete
+    # File processing complete. Save file if option is enabled.
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    if fix:
+        print("File saved with fixes.")
+        srt.save_file()
 
     print('Processing complete.')
     print()

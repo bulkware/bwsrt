@@ -26,6 +26,10 @@ class SubRip(object):
         self.subtitles = []
 
 
+    def delete(self, key):
+        del self.subtitles[key]
+
+
     def open_file(self, filepath, enc='utf_8_sig'):
 
         # Close any previous file
@@ -113,7 +117,9 @@ class SubRip(object):
         # Loop file data and save to file
         try:
             filehandle = open(self.filepath, 'w', encoding=enc)
-            for subtitle in self.subtitles:
+            for key, subtitle in enumerate(self.subtitles):
+                if key > 0:
+                    filehandle.write('\n')
                 filehandle.write(subtitle[0] + '\n')
                 filehandle.write(subtitle[1] + '\n')
                 filehandle.write(subtitle[2].replace('<br />', '\n') + '\n')
