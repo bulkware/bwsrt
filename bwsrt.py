@@ -123,7 +123,7 @@ for filename in os.listdir(workingpath):
 
 
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    # Check subtitle numbering
+    # Check subtitle overlapping
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     if check_overlapping:

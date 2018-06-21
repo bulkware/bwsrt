@@ -60,46 +60,39 @@ class SubRip(object):
             return False, 'File type is not valid: "{0}".'.format(basename)
 
         # Loop through file and parse contents into a list
-        try:
-            key = ""
-            timecode = ""
-            lines = ""
-            with open(filepath, 'r', encoding=enc) as filehandle:
-                for line in iter(filehandle):
-                    line = line.strip()
-                    if key == "":
-                        if re.match(r"^[\d]+\Z", line):
-                            key = line
-                        else:
-                            return (False, 'Numbering error. Line="{0}".'
-                                .format(line))
-                    elif timecode == "":
-                        if self.timecode.match(line):
-                            timecode = line
-                        else:
-                            return (False, 'Timecode error. Line="{0}".'
-                                .format(line))
-                    elif line != "":
-                        if lines != "":
-                            lines += "<br />"
-                        lines += line
+        key = ""
+        timecode = ""
+        lines = ""
+        i = 0
+        with open(filepath, 'r', encoding=enc) as filehandle:
+            for line in iter(filehandle):
+                i +=1
+                line = line.strip()
+                if key == "":
+                    if re.match(r"^[\d]+\Z", line):
+                        key = line
                     else:
-                        self.subtitles.append([key, timecode, lines])
-                        key = ""
-                        timecode = ""
-                        lines = ""
-                self.subtitles.append([key, timecode, lines])
-        except IOError as e:
-            return False, 'I/O error({0}): "{1}".'.format(e.errno, e.strerror)
-        except UnicodeDecodeError:
-            return False, 'Unicode Decode Error: "{0}".'.format(filepath)
-        except UnicodeEncodeError:
-            return False, 'Unicode Encode Error: "{0}".'.format(filepath)
-        except:
-            return False, 'Unexpected error: "{0}".'.format(sys.exc_info()[1])
-        else:
-            self.filepath = filepath
-            return True, 'File opened successfully.'
+                        return (False, 'Numbering error. Line="{0}".'
+                            .format(line))
+                elif timecode == "":
+                    if self.timecode.match(line):
+                        timecode = line
+                    else:
+                        return (False, 'Timecode error. Line="{0}".'
+                            .format(line))
+                elif line != "":
+                    if lines != "":
+                        lines += "<br />"
+                    lines += line
+                else:
+                    self.subtitles.append([key, timecode, lines])
+                    key = ""
+                    timecode = ""
+                    lines = ""
+                    print("i=",i,"/line =",line,"===",[key, timecode, lines])
+            self.subtitles.append([key, timecode, lines])
+        self.filepath = filepath
+        return True, 'File opened successfully.'
 
 
     def save_file(self, enc='utf_8_sig'):
