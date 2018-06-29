@@ -18,7 +18,7 @@ class SubRip(object):
     self.filepath = '' # Currently open file path
     self.subtitles = [] # A list for subtitles
 
-    # Regular expression to match timecodes
+    # Compiled regular expression objects
     self.timecode = re.compile(r'^\d{2}:\d{2}:\d{2},\d{3} --> ' +
       '\d{2}:\d{2}:\d{2},\d{3}\Z')
 
@@ -35,7 +35,7 @@ class SubRip(object):
 
 
   # Open SubRip-file
-  def open_file(self, filepath, enc='utf_8_sig'):
+  def open_file(self, filepath, enc='utf_8_sig', strip=True):
 
     # Close any previous file
     self.close_file()
@@ -74,8 +74,15 @@ class SubRip(object):
         # Trim line
         line = line.strip()
 
+        # Strip unwanted characters
+        if strip:
+          line = re.sub(u'[\u0000-\u001f]', '', line) # ASCII control characters
+          line = line.replace(u'\ufeff', '') # Unicode byte order mark (BOM)
+
         # First we find out the subtitle key
         if key == '':
+          if strip:
+            line = re.sub('[^\d]', '', line) # Strip everything but numbers
           if re.match(r"^[\d]+\Z", line):
             key = line
             continue

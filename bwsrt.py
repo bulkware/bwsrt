@@ -34,13 +34,16 @@ zerostamp = '00:00:00,000' # Zero time stamp
 # Read configuration file
 config = configparser.RawConfigParser()
 config.read(configfile)
+strip_unwanted_chars = config.getboolean("Configuration", "StripUnwantedChars")
 blacklist = str(config.get("Configuration", "BlackList"))
-blacklist_regex = re.compile(blacklist)
 check_blacklist = config.getboolean("Configuration", "CheckBlackList")
 check_duplicates = config.getboolean("Configuration", "CheckDuplicates")
 check_numbering = config.getboolean("Configuration", "CheckNumbering")
 check_overlapping = config.getboolean("Configuration", "CheckOverlapping")
 min_duration = int(config.get("Configuration", "MinimumDuration"))
+
+# Compiled regular expression objects
+blacklist_regex = re.compile(blacklist)
 
 # Read command line arguments
 parser = argparse.ArgumentParser()
@@ -75,7 +78,7 @@ for filename in os.listdir(workingpath):
   print('Processing file: "{0}".'.format(filename))
   print()
   srt = SubRip()
-  ok, message = srt.open_file(filepath)
+  ok, message = srt.open_file(filepath, strip=strip_unwanted_chars)
   if not ok:
     print('Error while opening file: "{0}"'.format(filename))
     print(message)
