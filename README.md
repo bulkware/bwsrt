@@ -6,7 +6,7 @@ A tool to fix common errors from SubRip files.
 ## Caution!
 If you are not 100% certain of what you are about to do or if you don't even
 know what this application does then please do yourself a favor and don't even
-download it. You can ruin all your files with simply running it. This
+download it. You can ruin all your files by simply running it. This
 application does not create any backup files before running. You have been
 warned.
 

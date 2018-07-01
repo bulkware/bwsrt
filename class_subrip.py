@@ -91,6 +91,8 @@ class SubRip(object):
 
         # After subtitle key, next thing should be the timestamps
         if key != '' and timecode == '':
+          if strip:
+            line = re.sub('[^:,\- >\d]+', '', line) # Strip unnecessary chars
           if self.timecode.match(line):
             timecode = line
             continue
